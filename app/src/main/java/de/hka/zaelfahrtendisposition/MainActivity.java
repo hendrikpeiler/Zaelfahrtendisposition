@@ -14,8 +14,8 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
-            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
+            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.Erhebungsstand);
+            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.Zaehlfahrten);
 
             // Bewerten der importierten Daten
             Map<String, Integer> bewertung = DataEvaluator.evaluateData(erhebungsstand);

@@ -18,20 +18,21 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Fahrt> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
-            //List<Fahrt> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
+            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
+            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
+            //schalke stinkt
 
             // Bewerten der importierten Daten
-            List<Fahrt> bewertung = DataEvaluator.evaluateData(erhebungsstand);
+            Map<String, Integer> bewertung = DataEvaluator.evaluateData(erhebungsstand);
 
             // Analyse der Verteilung der importierten Daten
-            //Map<String, Integer> verteilung = DistributionAnalyzer.analyzeDistribution(zaehlfahrten);
+            Map<String, Integer> verteilung = DistributionAnalyzer.analyzeDistribution(zaehlfahrten);
 
             // Generieren von Dispositionsvorschlägen basierend auf der Bewertung
-            //List<Map<String, String>> vorschlaege = DispositionGenerator.generateDispositionSuggestions(bewertung, 5);
+            List<Map<String, String>> vorschlaege = DispositionGenerator.generateDispositionSuggestions(bewertung, 5);
 
             // Ausgabe der generierten Vorschläge
-            //vorschlaege.forEach(System.out::println);
+            vorschlaege.forEach(System.out::println);
         } catch (IOException e) {
             // Fehlerbehandlung bei IO-Ausnahmen
             e.printStackTrace();

@@ -1,34 +1,33 @@
 package de.hka.zaelfahrtendisposition;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity {
     public static void main(String[] args) {
         try {
-            String erhebungsstandPath = "app/src/main/res/Erhebungsstand.csv";
-            String zaehlfahrtenPath = "src/main/res/Zaehlfahrten.csv";
+            // Definieren der Pfade zu den CSV-Dateien
+            String erhebungsstandPath = "path/to/Erhebungsstand.csv";
+            String zaehlfahrtenPath = "path/to/Zaehlfahrten.csv";
 
-            //Schalke stinkt
-
-            // Daten importieren
+            // Importieren der CSV-Daten
             List<Map<String, String>> erhebungsstand = DataImporter.importCSV(erhebungsstandPath);
             List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(zaehlfahrtenPath);
 
-            // Daten bewerten
+            // Bewerten der importierten Daten
             Map<String, Integer> bewertung = DataEvaluator.evaluateData(erhebungsstand);
 
-            // Verteilungsanalyse
+            // Analyse der Verteilung der importierten Daten
             Map<String, Integer> verteilung = DistributionAnalyzer.analyzeDistribution(zaehlfahrten);
 
-            // Dispositionsvorschläge generieren
+            // Generieren von Dispositionsvorschlägen basierend auf der Bewertung
             List<Map<String, String>> vorschlaege = DispositionGenerator.generateDispositionSuggestions(bewertung, 5);
 
-            // Vorschläge ausgeben
+            // Ausgabe der generierten Vorschläge
             vorschlaege.forEach(System.out::println);
         } catch (IOException e) {
+            // Fehlerbehandlung bei IO-Ausnahmen
             e.printStackTrace();
         }
     }

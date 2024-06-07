@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class DataImporter {
 
-    public static List<Map<String, String>> importCSV(Context context, int resourceId) throws IOException {
-        List<Map<String, String>> data = new ArrayList<>();
+    public static List<Fahrt> importCSV(Context context, int resourceId) throws IOException {
+        List<Fahrt> data = new ArrayList<>();
         InputStream is = context.getResources().openRawResource(resourceId);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             String line;
@@ -24,18 +24,15 @@ public class DataImporter {
 
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");
-                Map<String, String> row = new HashMap<>();
-                for (int i = 0; i < headers.length; i++) {
-                    row.put(headers[i], values[i]);
-                }
-                data.add(row);
+                // Erstellen Sie ein neues Fahrt-Objekt und fügen Sie es der Liste hinzu
+                Fahrt fahrt = new Fahrt(values[0], values[1], Integer.parseInt(values[2]), values[3], values[4], Integer.parseInt(values[5]), Integer.parseInt(values[6]), Integer.parseInt(values[7]));
+                data.add(fahrt);
 
                 // Daten zur Kontrolle ins Logcat schreiben
-                Log.d("DataImporter", "Eingefügte Daten: " + row.toString());
+                Log.d("DataImporter", "Eingefügte Daten: " + fahrt.toString());
             }
 
         }
         return data;
     }
-
 }

@@ -85,4 +85,9 @@ public class Fahrt {
     public void setTagesgruppe(String tagesgruppe) {
         Tagesgruppe = tagesgruppe;
     }
+
+    public int getPruefQuote(){
+        return (int) (((double) guetepruefungOk) / ((double) geplant) * 100);
+    }
+
 }

@@ -29,7 +29,8 @@ public class DataImporter {
                 data.add(fahrt);
 
                 // Daten zur Kontrolle ins Logcat schreiben
-                Log.d("DataImporter", "Eingefügte Daten: " + fahrt.toString());
+                Log.d("DataImporter", "Eingefügte Daten: " + "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
+                        ", Starthaltestelle: " + fahrt.getStarthaltestelle() + ", Abfahrtszeit: " + fahrt.getAbfahrtszeit());
             }
 
         }

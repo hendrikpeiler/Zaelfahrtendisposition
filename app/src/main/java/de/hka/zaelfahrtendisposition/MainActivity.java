@@ -8,8 +8,10 @@ import java.util.Map;
 public class MainActivity {
     public static void main(String[] args) {
         try {
-            String erhebungsstandPath = "src/resources/erhebungsstand.csv";
-            String zaehlfahrtenPath = "src/resources/zaehlfahrten.csv";
+            String erhebungsstandPath = "app/src/main/res/Erhebungsstand.csv";
+            String zaehlfahrtenPath = "src/main/res/Zaehlfahrten.csv";
+
+            //Schalke stinkt
 
             // Daten importieren
             List<Map<String, String>> erhebungsstand = DataImporter.importCSV(erhebungsstandPath);

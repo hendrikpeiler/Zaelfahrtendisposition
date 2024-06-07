@@ -20,9 +20,9 @@ public class DataEvaluator {
             int erhoben = Integer.parseInt(row.get("Erhoben"));
             int guetepruefungOk = Integer.parseInt(row.get("Güteprüfung ok"));
 
-            // Der Wert für den aktuellen Schlüssel in der Bewertungsmap wird um den Wert von "Gültig" erhöht.
-            // Falls der Schlüssel noch nicht vorhanden ist, wird der Wert auf 0 gesetzt und dann um den Wert von "Gültig" erhöht.
-            bewertung.put(key, bewertung.getOrDefault(key, 0) + gueltig);
+            // Der Wert für den aktuellen Schlüssel in der Bewertungsmap wird um den Wert von "Güteprüfung ok" erhöht.
+            // Falls der Schlüssel noch nicht vorhanden ist, wird der Wert auf 0 gesetzt und dann um den Wert von "Güteprüfung ok" erhöht.
+            bewertung.put(key, bewertung.getOrDefault(key, 0) + guetepruefungOk);
 
             // Hier könnten geplant und erhoben verwendet werden, wenn benötigt
         }

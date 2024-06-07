@@ -1,19 +1,21 @@
 package de.hka.zaelfahrtendisposition;
 
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity {
-    public static void main(String[] args) {
-        try {
-            // Definieren der Pfade zu den CSV-Dateien
-            String erhebungsstandPath = "path/to/Erhebungsstand.csv";
-            String zaehlfahrtenPath = "path/to/Zaehlfahrten.csv";
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        try {
             // Importieren der CSV-Daten
-            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(erhebungsstandPath);
-            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(zaehlfahrtenPath);
+            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
+            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
 
             // Bewerten der importierten Daten
             Map<String, Integer> bewertung = DataEvaluator.evaluateData(erhebungsstand);

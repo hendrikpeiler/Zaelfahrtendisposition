@@ -1,7 +1,9 @@
 package de.hka.zaelfahrtendisposition;
 
+import android.content.Context;
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +12,10 @@ import java.util.Map;
 
 public class DataImporter {
 
-    public static List<Map<String, String>> importCSV(String filePath) throws IOException {
+    public static List<Map<String, String>> importCSV(Context context, int resourceId) throws IOException {
         List<Map<String, String>> data = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        InputStream is = context.getResources().openRawResource(resourceId);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             String line;
             String[] headers = br.readLine().split(";");  // Annahme: Die CSV-Datei verwendet Semikolon als Trennzeichen
 

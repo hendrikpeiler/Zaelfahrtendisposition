@@ -1,8 +1,11 @@
 package de.hka.zaelfahrtendisposition;
 
 import android.os.Bundle;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +15,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         try {
             // Importieren der CSV-Daten
-            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.Erhebungsstand);
-            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.Zaehlfahrten);
+            List<Map<String, String>> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
+            List<Map<String, String>> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
 
             // Bewerten der importierten Daten
             Map<String, Integer> bewertung = DataEvaluator.evaluateData(erhebungsstand);
@@ -33,4 +37,5 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 }

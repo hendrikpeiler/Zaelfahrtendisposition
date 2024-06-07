@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "de.hka.zaelfahrtendisposition"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "de.hka.zaelfahrtendisposition"

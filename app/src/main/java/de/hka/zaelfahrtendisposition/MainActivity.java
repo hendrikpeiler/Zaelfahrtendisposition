@@ -1,14 +1,11 @@
 package de.hka.zaelfahrtendisposition;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -18,16 +15,22 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Fahrt> erhebungsstand = DataImporter.importCSV(this, R.raw.erhebungsstand);
+            List<Fahrt> erhebungsstand = DatenImporteur.importCSV(this, R.raw.erhebungsstand);
             //List<Fahrt> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
 
-            // Filtern der Fahrten nach einem bestimmten Wochentag, z.B. "Montag"
-            String gewuenschteTagesgruppe = "Samstag";
-            int anzahlFahrten = 50;
-            List<Fahrt> gefilterteListe = filterList(erhebungsstand, gewuenschteTagesgruppe, anzahlFahrten);
+            // Filtern der Fahrten nach einem bestimmten Wochentag und maximale Anzahl an Fahrten
+            List<Fahrt> gefilterteListe;
+            boolean filtern = false;
+            if (filtern) {
+                String gewuenschteTagesgruppe = "Samstag";
+                int anzahlFahrten = 38;
+                gefilterteListe = filterList(erhebungsstand, gewuenschteTagesgruppe, anzahlFahrten);
+            }else{
+                gefilterteListe = erhebungsstand;
+            }
 
             // Bewerten der importierten Daten
-            List<Fahrt> bewertung = DataEvaluator.evaluateData(gefilterteListe);
+            List<Fahrt> bewertung = DatenAuswerter.evaluateData(gefilterteListe);
         } catch (IOException e) {
             // Fehlerbehandlung bei IO-Ausnahmen
             e.printStackTrace();
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 gefilterteListe.add(fahrt);
                 count++;
                 if (count >= anzahlFahrten) {
-                    break;  // Stoppe die Schleife, wenn die maximale Anzahl erreicht ist
+                    break;
                 }
             }
         }

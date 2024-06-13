@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class DataEvaluator {
+public class DatenAuswerter {
     public static List<Fahrt> evaluateData(List<Fahrt> erhebungsstand) {
         // Sortiere die Liste der Fahrten basierend auf der Prüfquote (niedrigste zuerst)
         Collections.sort(erhebungsstand, new Comparator<Fahrt>() {

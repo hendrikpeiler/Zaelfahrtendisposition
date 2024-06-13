@@ -2,18 +2,15 @@ package de.hka.zaelfahrtendisposition;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class DataImporter {
+public class DatenImporteur {
 
     public static List<Fahrt> importCSV(Context context, int resourceId) throws IOException {
         List<Fahrt> data = new ArrayList<>();

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DatenImporteur {
 
-    public static List<Fahrt> importCSV(Context context, int resourceId) throws IOException {
+    public static List<Fahrt> importiereCSV(Context context, int resourceId) throws IOException {
         List<Fahrt> data = new ArrayList<>();
         InputStream is = context.getResources().openRawResource(resourceId);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
@@ -26,7 +26,7 @@ public class DatenImporteur {
                 data.add(fahrt);
 
                 // Daten zur Kontrolle ins Logcat schreiben
-                Log.d("DataImporter", "Eingefügte Daten: " + "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
+                Log.d("DatenImporteur", "Eingefügte Daten: " + "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
                         ", Starthaltestelle: " + fahrt.getStarthaltestelle() + ", Abfahrtszeit: " + fahrt.getAbfahrtszeit());
             }
 

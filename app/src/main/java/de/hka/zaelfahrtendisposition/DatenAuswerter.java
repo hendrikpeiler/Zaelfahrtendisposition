@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class DatenAuswerter {
-    public static List<Fahrt> evaluateData(List<Fahrt> erhebungsstand) {
+    public static List<Fahrt> evaluiereDaten(List<Fahrt> erhebungsstand) {
         // Sortiere die Liste der Fahrten basierend auf der Prüfquote (niedrigste zuerst)
         Collections.sort(erhebungsstand, new Comparator<Fahrt>() {
             @Override
@@ -19,7 +19,7 @@ public class DatenAuswerter {
 
         // Logge die sortierte Liste für Kontrollzwecke
         for (Fahrt fahrt : erhebungsstand) {
-            Log.d("DataEvaluator", "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
+            Log.d("DatenAuswerter", "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
                     ", Starthaltestelle: " + fahrt.getStarthaltestelle() + ", Abfahrtszeit: " + fahrt.getAbfahrtszeit() +
                     ", Prüfquote: " + fahrt.getPruefQuote() + "%");
         }

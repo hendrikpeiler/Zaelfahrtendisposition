@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatenImporteur {
+public class DatenImporteurErhebungsstand {
 
     public static List<Fahrt> importiereCSV(Context context, int resourceId) throws IOException {
         List<Fahrt> data = new ArrayList<>();

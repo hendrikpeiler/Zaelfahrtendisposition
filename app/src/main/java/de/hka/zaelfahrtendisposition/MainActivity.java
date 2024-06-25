@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Fahrt> erhebungsstandListe = DatenImporteur.importiereCSV(this, R.raw.erhebungsstand);
+            List<Fahrt> erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
 
             // Linien sammeln
             sammleLinien(erhebungsstandListe);

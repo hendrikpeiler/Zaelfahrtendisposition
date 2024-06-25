@@ -19,7 +19,7 @@ public class DatenAuswerter {
 
         // Logge die sortierte Liste für Kontrollzwecke
         for (Fahrt fahrt : erhebungsstand) {
-            Log.d("DatenAuswerter", "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
+            Log.d("DatenAuswerter", "Ausgewertete Daten: Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
                     ", Starthaltestelle: " + fahrt.getStarthaltestelle() + ", Abfahrtszeit: " + fahrt.getAbfahrtszeit() +
                     ", Prüfquote: " + fahrt.getPruefQuote() + "%");
         }

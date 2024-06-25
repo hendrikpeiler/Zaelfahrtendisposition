@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "713368742693",
+    "project_id": "zaelfahrtendisposition",
+    "storage_bucket": "zaelfahrtendisposition.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713368742693:android:837c8b83de08135d8608cc",
+        "android_client_info": {
+          "package_name": "de.hka.zaelfahrtendisposition"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3bklHA6meb7EfVoi3xUyewoOmLgow-qQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Fahrt> erhebungsstand = DatenImporteur.importiereCSV(this, R.raw.erhebungsstand);
+            List<Fahrt> erhebungsstandListe = DatenImporteur.importiereCSV(this, R.raw.erhebungsstand);
             //List<Fahrt> zaehlfahrten = DataImporter.importCSV(this, R.raw.zaehlfahrten);
 
             // Filtern der Fahrten nach einem bestimmten Wochentag und maximale Anzahl an Fahrten
@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
             boolean filtern = true;
             if (filtern) {
                 String gewuenschteTagesgruppe = "Samstag";
-                gefilterteListe = filterList(erhebungsstand, gewuenschteTagesgruppe);
+                gefilterteListe = filterListeWochentag(erhebungsstandListe, gewuenschteTagesgruppe);
             }else{
-                gefilterteListe = erhebungsstand;
+                gefilterteListe = erhebungsstandListe;
             }
 
             // Bewerten der importierten Daten
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Methode zum Filtern der Fahrten nach Wochentag
-    private List<Fahrt> filterList(List<Fahrt> fahrten, String wochentag) {
+    private List<Fahrt> filterListeWochentag(List<Fahrt> fahrten, String wochentag) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
         for (Fahrt fahrt : fahrten) {
             if (fahrt.getTagesgruppe().equalsIgnoreCase(wochentag)) {
@@ -45,5 +45,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return gefilterteListe;
+
+
+
     }
 }

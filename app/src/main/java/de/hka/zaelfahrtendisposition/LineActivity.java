@@ -38,10 +38,10 @@ public class LineActivity extends AppCompatActivity {
 
         // Erhalte die übergebenen Linien
         ArrayList<String> linienListe = getIntent().getStringArrayListExtra("linienListe");
+        linienListe.add("123");
 
         // Adapter für Spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, linienListe);
-        mySpinner.setAdapter(adapter);
 
         // Item selected listener
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

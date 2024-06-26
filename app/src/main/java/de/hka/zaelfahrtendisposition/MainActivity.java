@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
@@ -28,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private Set<String> linienSet = new HashSet<>();
 
     // Globale Variable zum Speichern der Richtungen
-    private boolean[] richtungenEinbeziehen = new boolean[2]; // Index 0: Richtung 1, Index 1: Richtung 2
+    private boolean richtung1Einbeziehen = true;
+    private boolean richtung2Einbeziehen = true;
 
     // Liste zum Speichern der Linien, nach denen gefiltert werden soll
     private List<String> filterLinien = new ArrayList<>();
@@ -37,16 +39,21 @@ public class MainActivity extends AppCompatActivity {
     private LocalTime startZeit = LocalTime.MIN; // Standardmäßig auf 00:00:00 setzen
     private LocalTime endZeit = LocalTime.MAX.minusSeconds(1); // Standardmäßig auf 23:59:59 setzen
 
+    private static final int REQUEST_CODE_SCHEDULE = 1; // Request-Code für SceduleActivity
+    private static final int REQUEST_CODE_DIRECTION = 2; // Request-Code für DirectionActivity
+
+    private boolean hasReceivedSchedule = false; // Flag, ob Start- und Endzeit empfangen wurde
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn_search = this.findViewById(R.id.btn_search);
-        Button btn_scedule = this.findViewById(R.id.btn_scedule);
-        Button btn_line = this.findViewById(R.id.btn_line);
-        Button btn_direction = this.findViewById(R.id.btn_direction);
-        Button btn_daygroup = this.findViewById(R.id.btn_daygroup);
+        Button btn_search = findViewById(R.id.btn_search);
+        Button btn_scedule = findViewById(R.id.btn_scedule);
+        Button btn_line = findViewById(R.id.btn_line);
+        Button btn_direction = findViewById(R.id.btn_direction);
+        Button btn_daygroup = findViewById(R.id.btn_daygroup);
 
         btn_search.setOnClickListener(v -> {
             try {
@@ -55,10 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // Linien sammeln
                 sammleLinien(erhebungsstandListe);
-
-                // Setzen der Richtungen, die einbezogen werden sollen
-                richtungenEinbeziehen[0] = true; // Richtung 1 einbeziehen
-                richtungenEinbeziehen[1] = false; // Richtung 2 einbeziehen
 
                 // Setzen der Linien, nach denen gefiltert werden soll
                 filterLinien.add("811000"); // Filter nach Linie 811000
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent activity_search = new Intent(this, SearchActivity.class);
                 ArrayList<Fahrt> bewertungList = new ArrayList<>(bewertung);
                 activity_search.putParcelableArrayListExtra("bewertung_list", bewertungList);
-                this.startActivity(activity_search);
+                startActivity(activity_search);
 
             } catch (IOException e) {
                 // Fehlerbehandlung bei IO-Ausnahmen
@@ -95,29 +98,64 @@ public class MainActivity extends AppCompatActivity {
         btn_scedule.setOnClickListener(v -> {
             Intent activity_scedule = new Intent(this, SceduleActivity.class);
 
-            // Übergeben der Start- und Endzeit als Extras
-            activity_scedule.putExtra("start_zeit", startZeit.toString());
-            Log.d("MainActivity","Startzeit mit: " + startZeit.toString()+ " übergeben");
-            activity_scedule.putExtra("end_zeit", endZeit.toString());
+            // Übergeben der Start- und Endzeit als Extras, falls bereits empfangen
+            if (hasReceivedSchedule) {
+                activity_scedule.putExtra("start_time", startZeit.toString());
+                Log.d("MainActivity", "Startzeit übergeben: " + startZeit.toString());
+                activity_scedule.putExtra("end_time", endZeit.toString());
+            }
 
-            this.startActivity(activity_scedule);
+            startActivityForResult(activity_scedule, REQUEST_CODE_SCHEDULE);
         });
-
 
         btn_line.setOnClickListener(v -> {
             Intent activity_line = new Intent(this, LineActivity.class);
-            this.startActivity(activity_line);
+            startActivity(activity_line);
         });
 
         btn_direction.setOnClickListener(v -> {
             Intent activity_direction = new Intent(this, DirectionActivity.class);
-            this.startActivity(activity_direction);
+            activity_direction.putExtra("richtung1", richtung1Einbeziehen);
+            activity_direction.putExtra("richtung2", richtung2Einbeziehen);
+            startActivityForResult(activity_direction, REQUEST_CODE_DIRECTION);
         });
 
         btn_daygroup.setOnClickListener(v -> {
             Intent activity_daygroup = new Intent(this, DaygroupActivity.class);
-            this.startActivity(activity_daygroup);
+            startActivity(activity_daygroup);
         });
+    }
+
+    // Diese Methode wird aufgerufen, wenn die SceduleActivity oder DirectionActivity geschlossen wird
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_SCHEDULE && resultCode == RESULT_OK && data != null) {
+            // Start- und Endzeit aus den Intent-Extras auslesen
+            String startTimeStr = data.getStringExtra("start_time");
+            String endTimeStr = data.getStringExtra("end_time");
+
+            try {
+                // Konvertierung der Strings in LocalTime-Objekte
+                startZeit = LocalTime.parse(startTimeStr, DateTimeFormatter.ISO_LOCAL_TIME);
+                endZeit = LocalTime.parse(endTimeStr, DateTimeFormatter.ISO_LOCAL_TIME);
+                hasReceivedSchedule = true; // Flag setzen, dass Zeit empfangen wurde
+
+                Log.d("MainActivity", "Startzeit empfangen: " + startZeit.toString());
+                Log.d("MainActivity", "Endzeit empfangen: " + endZeit.toString());
+
+            } catch (DateTimeParseException e) {
+                Log.e("MainActivity", "Fehler beim Parsen der Zeit: " + e.getMessage());
+            }
+        } else if (requestCode == REQUEST_CODE_DIRECTION && resultCode == RESULT_OK && data != null) {
+            // Richtungen aus den Intent-Extras auslesen
+            richtung1Einbeziehen = data.getBooleanExtra("richtung1", true);
+            richtung2Einbeziehen = data.getBooleanExtra("richtung2", true);
+
+            Log.d("MainActivity", "Richtung 1 einbeziehen: " + richtung1Einbeziehen);
+            Log.d("MainActivity", "Richtung 2 einbeziehen: " + richtung2Einbeziehen);
+        }
     }
 
     // Methode zum Filtern der Fahrten nach den gewünschten Tagen
@@ -136,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Methode zum Sammeln der Linien
-    // Methode zum Sammeln der Linien
     private List<String> sammleLinien(List<Fahrt> fahrten) {
         List<String> linienListe = new ArrayList<>();
 
@@ -152,13 +189,12 @@ public class MainActivity extends AppCompatActivity {
         return linienListe;
     }
 
-
     // Methode zum Filtern der Fahrten nach Richtungen
     private List<Fahrt> filterListeNachRichtungen(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
         for (Fahrt fahrt : fahrten) {
             int richtung = fahrt.getRichtung();
-            if (richtung >= 1 && richtung <= 2 && richtungenEinbeziehen[richtung - 1]) {
+            if (richtung >= 1 && richtung <= 2 && ((richtung == 1 && richtung1Einbeziehen) || (richtung == 2 && richtung2Einbeziehen))) {
                 gefilterteListe.add(fahrt);
             }
         }

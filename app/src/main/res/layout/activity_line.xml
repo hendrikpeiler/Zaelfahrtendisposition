@@ -5,16 +5,16 @@
     android:padding="16dp">
 
     <Spinner
-        android:id="@+id/mySpinner"
+        android:id="@+id/Spinner_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <TextView
-        android:id="@+id/selectedTextView"
+        android:id="@+id/selectedText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/mySpinner"
+        android:layout_below="@id/Spinner_line"
         android:layout_marginTop="16dp"
         android:text="Selected: None"
         android:textSize="18sp" />

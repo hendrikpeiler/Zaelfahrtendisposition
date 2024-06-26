@@ -24,8 +24,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 public class LineActivity extends AppCompatActivity {
-    private Spinner mySpinner;
-    private TextView selectedTextView;
+    private Spinner Spinner_line;
+    private TextView selectedText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,22 +33,22 @@ public class LineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_line);
 
         Intent intent = this.getIntent();
-        mySpinner = findViewById(R.id.mySpinner);
-        selectedTextView = findViewById(R.id.selectedTextView);
+        Spinner_line = findViewById(R.id.Spinner_line);
+        selectedText = findViewById(R.id.selectedText);
 
         // Erhalte die übergebenen Linien
         ArrayList<String> linienListe = getIntent().getStringArrayListExtra("linienListe");
 
         // Adapter für Spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, linienListe);
-        mySpinner.setAdapter(adapter);
+        Spinner_line.setAdapter(adapter);
 
         // Item selected listener
-        mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        Spinner_line.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedItem = (String) parentView.getItemAtPosition(position);
-                selectedTextView.setText("Selected: " + selectedItem);
+                selectedText.setText("Selected: " + selectedItem);
             }
 
             @Override

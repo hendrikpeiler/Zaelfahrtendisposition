@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Globale Variablen für den Zeitraum
     private LocalTime startZeit = LocalTime.MIN; // Standardmäßig auf 00:00:00 setzen
-    private LocalTime endZeit = LocalTime.MAX; // Standardmäßig auf 24:00:00 setzen
+    private LocalTime endZeit = LocalTime.MAX.minusSeconds(1); // Standardmäßig auf 23:59:59 setzen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +94,15 @@ public class MainActivity extends AppCompatActivity {
 
         btn_scedule.setOnClickListener(v -> {
             Intent activity_scedule = new Intent(this, SceduleActivity.class);
+
+            // Übergeben der Start- und Endzeit als Extras
+            activity_scedule.putExtra("start_zeit", startZeit.toString());
+            Log.d("MainActivity","Startzeit mit: " + startZeit.toString()+ " übergeben");
+            activity_scedule.putExtra("end_zeit", endZeit.toString());
+
             this.startActivity(activity_scedule);
         });
+
 
         btn_line.setOnClickListener(v -> {
             Intent activity_line = new Intent(this, LineActivity.class);
@@ -129,16 +136,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Methode zum Sammeln der Linien
-    private void sammleLinien(List<Fahrt> fahrten) {
+    // Methode zum Sammeln der Linien
+    private List<String> sammleLinien(List<Fahrt> fahrten) {
+        List<String> linienListe = new ArrayList<>();
+
         for (Fahrt fahrt : fahrten) {
-            linienSet.add(fahrt.getLinie());
+            linienListe.add(fahrt.getLinie());
         }
 
         // Linien ins Logcat schreiben
-        for (String linie : linienSet) {
+        for (String linie : linienListe) {
             Log.d("MainActivity", "Linie: " + linie);
         }
+
+        return linienListe;
     }
+
 
     // Methode zum Filtern der Fahrten nach Richtungen
     private List<Fahrt> filterListeNachRichtungen(List<Fahrt> fahrten) {

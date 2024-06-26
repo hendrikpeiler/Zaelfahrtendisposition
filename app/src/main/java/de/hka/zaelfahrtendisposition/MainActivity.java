@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
@@ -36,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
     // Globale Variablen für den Zeitraum
     private LocalTime startZeit = LocalTime.MIN; // Standardmäßig auf 00:00:00 setzen
     private LocalTime endZeit = LocalTime.MAX.minusSeconds(1); // Standardmäßig auf 23:59:59 setzen
+
+    private static final int REQUEST_CODE_SCHEDULE = 1; // Request-Code für SceduleActivity
+
+    private boolean hasReceivedSchedule = false; // Flag, ob Start- und Endzeit empfangen wurde
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +100,14 @@ public class MainActivity extends AppCompatActivity {
         btn_scedule.setOnClickListener(v -> {
             Intent activity_scedule = new Intent(this, SceduleActivity.class);
 
-            // Übergeben der Start- und Endzeit als Extras
-            activity_scedule.putExtra("start_zeit", startZeit.toString());
-            Log.d("MainActivity","Startzeit mit: " + startZeit.toString()+ " übergeben");
-            activity_scedule.putExtra("end_zeit", endZeit.toString());
+            // Übergeben der Start- und Endzeit als Extras, falls bereits empfangen
+            if (hasReceivedSchedule) {
+                activity_scedule.putExtra("start_zeit", startZeit.toString());
+                Log.d("MainActivity", "Startzeit mit: " + startZeit.toString() + " übergeben");
+                activity_scedule.putExtra("end_zeit", endZeit.toString());
+            }
 
-            this.startActivity(activity_scedule);
+            startActivityForResult(activity_scedule, REQUEST_CODE_SCHEDULE);
         });
 
 
@@ -120,6 +127,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Diese Methode wird aufgerufen, wenn die SceduleActivity geschlossen wird
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_SCHEDULE && resultCode == RESULT_OK && data != null) {
+            // Start- und Endzeit aus den Intent-Extras auslesen
+            String startTimeStr = data.getStringExtra("start_time");
+            String endTimeStr = data.getStringExtra("end_time");
+
+            try {
+                // Konvertierung der Strings in LocalTime-Objekte
+                startZeit = LocalTime.parse(startTimeStr, DateTimeFormatter.ISO_LOCAL_TIME);
+                endZeit = LocalTime.parse(endTimeStr, DateTimeFormatter.ISO_LOCAL_TIME);
+                hasReceivedSchedule = true; // Flag setzen, dass Zeit empfangen wurde
+
+                Log.d("MainActivity", "Startzeit empfangen: " + startZeit.toString());
+                Log.d("MainActivity", "Endzeit empfangen: " + endZeit.toString());
+
+            } catch (DateTimeParseException e) {
+                Log.e("MainActivity", "Fehler beim Parsen der Zeit: " + e.getMessage());
+            }
+        }
+    }
+
     // Methode zum Filtern der Fahrten nach den gewünschten Tagen
     private List<Fahrt> filterListeNachTagen(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
@@ -136,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Methode zum Sammeln der Linien
-    // Methode zum Sammeln der Linien
     private List<String> sammleLinien(List<Fahrt> fahrten) {
         List<String> linienListe = new ArrayList<>();
 
@@ -151,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
         return linienListe;
     }
-
 
     // Methode zum Filtern der Fahrten nach Richtungen
     private List<Fahrt> filterListeNachRichtungen(List<Fahrt> fahrten) {

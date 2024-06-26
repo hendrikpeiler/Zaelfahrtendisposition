@@ -2,80 +2,130 @@ package de.hka.zaelfahrtendisposition;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.TimePickerDialog;
-import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Calendar;
-
-
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class SceduleActivity extends AppCompatActivity {
     private EditText startTimeEditText;
     private EditText endTimeEditText;
     private Button showTableButton;
 
-    private Calendar startTime;
-    private Calendar endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scedule);
+
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
+        // Zeiten aus den SharedPreferences abrufen, oder Standardwerte setzen
+        startTime = retrieveTime("start_time", LocalTime.MIN);
+        endTime = retrieveTime("end_time", LocalTime.MAX);
+
         startTimeEditText = findViewById(R.id.startTimeEditText);
         endTimeEditText = findViewById(R.id.endTimeEditText);
         showTableButton = findViewById(R.id.btn_apply);
 
+        // Wenn Zeiten vorhanden sind, setzen wir die EditText-Felder
+        startTimeEditText.setText(formatTime(startTime));
+        endTimeEditText.setText(formatTime(endTime));
+
         startTimeEditText.setOnClickListener(v -> showTimePicker(time -> {
             startTime = time;
             startTimeEditText.setText(formatTime(time));
+            saveTime("start_time", time); // Zeit speichern
         }));
 
         endTimeEditText.setOnClickListener(v -> showTimePicker(time -> {
             endTime = time;
             endTimeEditText.setText(formatTime(time));
+            saveTime("end_time", time); // Zeit speichern
         }));
 
         showTableButton.setOnClickListener(v -> {
             if (startTime == null || endTime == null) {
                 Toast.makeText(this, "Bitte wähle Start und Endzeit", Toast.LENGTH_LONG).show();
-            } else if (startTime.after(endTime)) {
+            } else if (startTime.isAfter(endTime)) {
                 Toast.makeText(this, "Endzeit muss immer später als die Startzeit sein", Toast.LENGTH_LONG).show();
             } else {
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                // Die Zeiten als Ergebnis an die MainActivity zurückgeben
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("start_time", startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+                resultIntent.putExtra("end_time", endTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+                setResult(RESULT_OK, resultIntent);
+                finish();
             }
         });
+
     }
 
-    private void showTimePicker(TimePickerCallback callback) {
-        Calendar currentTime = Calendar.getInstance();
-        int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-        int minute = currentTime.get(Calendar.MINUTE);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Beim Schließen der Activity die gespeicherten Zeiten löschen
+        clearSavedTimes();
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, selectedHour, selectedMinute) -> {
-            Calendar selectedTime = Calendar.getInstance();
-            selectedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
-            selectedTime.set(Calendar.MINUTE, selectedMinute);
+        // Optional: Setze die Startzeit auf 0 Uhr und Endzeit auf 23:59
+        saveTime("start_time", LocalTime.MIN);
+        saveTime("end_time", LocalTime.of(23, 59));
+    }
+
+
+    private void showTimePicker(TimePickerCallback callback) {
+        LocalTime currentTime = LocalTime.now();
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            LocalTime selectedTime = LocalTime.of(hourOfDay, minute);
             callback.onTimeSelected(selectedTime);
-        }, hour, minute, true);
+        }, currentTime.getHour(), currentTime.getMinute(), true);
 
         timePickerDialog.show();
     }
 
-    private String formatTime(Calendar calendar) {
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        return String.format("%02d:%02d", hour, minute);
+    private void saveTime(String key, LocalTime time) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, time.format(DateTimeFormatter.ISO_LOCAL_TIME));
+        editor.apply();
+    }
+
+    private LocalTime retrieveTime(String key, LocalTime defaultValue) {
+        String timeStr = sharedPreferences.getString(key, null);
+        if (timeStr != null) {
+            try {
+                return LocalTime.parse(timeStr, DateTimeFormatter.ISO_LOCAL_TIME);
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return defaultValue;
+    }
+
+    private void clearSavedTimes() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("start_time");
+        editor.remove("end_time");
+        editor.apply();
+    }
+
+    private String formatTime(LocalTime time) {
+        return time.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     interface TimePickerCallback {
-        void onTimeSelected(Calendar time);
+        void onTimeSelected(LocalTime time);
     }
-
-    }
+}

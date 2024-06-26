@@ -29,7 +29,7 @@ public class SceduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scedule);
         startTimeEditText = findViewById(R.id.startTimeEditText);
         endTimeEditText = findViewById(R.id.endTimeEditText);
-        showTableButton = findViewById(R.id.showTableButton);
+        showTableButton = findViewById(R.id.btn_apply);
 
         startTimeEditText.setOnClickListener(v -> showTimePicker(time -> {
             startTime = time;
@@ -47,7 +47,7 @@ public class SceduleActivity extends AppCompatActivity {
             } else if (startTime.after(endTime)) {
                 Toast.makeText(this, "Endzeit muss immer später als die Startzeit sein", Toast.LENGTH_LONG).show();
             } else {
-                Intent intent = new Intent(this, SearchActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
             }
         });

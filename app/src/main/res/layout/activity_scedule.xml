@@ -26,11 +26,11 @@
         android:inputType="none" />
 
     <Button
-        android:id="@+id/showTableButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/btn_apply"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/endTimeEditText"
-        android:layout_marginTop="32dp"
-        android:text="Zeige Tabelle an" />
+        android:text="Anwenden"
+        android:layout_marginTop="32dp" />
 
 </RelativeLayout>

@@ -1,6 +1,9 @@
 package de.hka.zaelfahrtendisposition;
 
-public class Fahrt {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Fahrt implements Parcelable {
 
     String Tagesgruppe;
     String Linie;
@@ -20,6 +23,46 @@ public class Fahrt {
         this.geplant = geplant;
         this.erhoben = erhoben;
         this.guetepruefungOk = guetepruefungOk;
+    }
+
+    protected Fahrt(Parcel in) {
+        Tagesgruppe = in.readString();
+        Linie = in.readString();
+        Richtung = in.readInt();
+        Abfahrtszeit = in.readString();
+        Starthaltestelle = in.readString();
+        geplant = in.readInt();
+        erhoben = in.readInt();
+        guetepruefungOk = in.readInt();
+    }
+
+    public static final Creator<Fahrt> CREATOR = new Creator<Fahrt>() {
+        @Override
+        public Fahrt createFromParcel(Parcel in) {
+            return new Fahrt(in);
+        }
+
+        @Override
+        public Fahrt[] newArray(int size) {
+            return new Fahrt[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Tagesgruppe);
+        dest.writeString(Linie);
+        dest.writeInt(Richtung);
+        dest.writeString(Abfahrtszeit);
+        dest.writeString(Starthaltestelle);
+        dest.writeInt(geplant);
+        dest.writeInt(erhoben);
+        dest.writeInt(guetepruefungOk);
     }
 
     public int getErhoben() {
@@ -89,5 +132,4 @@ public class Fahrt {
     public int getPruefQuote(){
         return (int) (((double) guetepruefungOk) / ((double) geplant) * 100);
     }
-
 }

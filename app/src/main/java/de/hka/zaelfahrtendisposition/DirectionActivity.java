@@ -2,13 +2,16 @@ package de.hka.zaelfahrtendisposition;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
-public class direction extends AppCompatActivity {
+public class DirectionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_direction);
+
+        Intent intent = this.getIntent();
     }
 }

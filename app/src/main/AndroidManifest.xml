@@ -13,19 +13,19 @@
         android:theme="@style/Theme.Zaelfahrtendisposition"
         tools:targetApi="31">
         <activity
-            android:name=".line"
+            android:name=".LineActivity"
             android:exported="false" />
         <activity
-            android:name=".search"
+            android:name=".SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".direction"
+            android:name=".DirectionActivity"
             android:exported="false" />
         <activity
-            android:name=".scedule"
+            android:name=".SceduleActivity"
             android:exported="false" />
         <activity
-            android:name=".daygroup"
+            android:name=".DaygroupActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

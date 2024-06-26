@@ -1,7 +1,9 @@
 package de.hka.zaelfahrtendisposition;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,6 +41,46 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button btn_search = this.findViewById(R.id.btn_search);
+
+        Button btn_scedule = this.findViewById(R.id.btn_scedule);
+
+        Button btn_line = this.findViewById(R.id.btn_line);
+
+        Button btn_direction = this.findViewById(R.id.btn_direction);
+
+        Button btn_daygroup = this.findViewById(R.id.btn_daygroup);
+
+        btn_search.setOnClickListener(v -> {
+            Intent activity_search = new Intent(this, SearchActivity.class);
+
+            this.startActivity(activity_search);
+        });
+
+        btn_scedule.setOnClickListener(v -> {
+            Intent activity_scedule = new Intent(this, SceduleActivity.class);
+
+            this.startActivity(activity_scedule);
+        });
+
+        btn_line.setOnClickListener(v -> {
+            Intent activity_line = new Intent(this, LineActivity.class);
+
+            this.startActivity(activity_line);
+        });
+
+        btn_direction.setOnClickListener(v -> {
+            Intent activity_direction = new Intent(this, DirectionActivity.class);
+
+            this.startActivity(activity_direction);
+        });
+
+        btn_daygroup.setOnClickListener(v -> {
+            Intent activity_daygroup = new Intent(this, DaygroupActivity.class);
+
+            this.startActivity(activity_daygroup);
+        });
 
         try {
             // Importieren der CSV-Daten

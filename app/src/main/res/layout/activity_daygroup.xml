@@ -28,7 +28,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:textAlignment="center"
-        android:text="Sonn und Feiertag"
+        android:text="Sonn- und Feiertag"
         android:textSize="20sp" />
     <Button
         android:id="@+id/btn_saturday"
@@ -66,5 +66,4 @@
         android:textAlignment="center"
         android:text="Schultag"
         android:textSize="20sp" />
-
 </RelativeLayout>

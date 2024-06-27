@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_SCHEDULE = 1; // Request-Code für SceduleActivity
     private static final int REQUEST_CODE_DIRECTION = 2; // Request-Code für DirectionActivity
+    private static final int REQUEST_CODE_DAYGROUP = 3; // Request-Code für DaygroupActivity
 
     private boolean hasReceivedSchedule = false; // Flag, ob Start- und Endzeit empfangen wurde
 
@@ -109,7 +110,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btn_line.setOnClickListener(v -> {
+            // Intent für die LineActivity erstellen
             Intent activity_line = new Intent(this, LineActivity.class);
+
+            // Linienliste an die LineActivity übergeben
+            ArrayList<String> linienListe = new ArrayList<>(linienSet); // Beispiel: linienSet aus deinem Code
+            activity_line.putStringArrayListExtra("linienListe", linienListe);
+
+            // LineActivity starten
             startActivity(activity_line);
         });
 
@@ -122,11 +130,15 @@ public class MainActivity extends AppCompatActivity {
 
         btn_daygroup.setOnClickListener(v -> {
             Intent activity_daygroup = new Intent(this, DaygroupActivity.class);
-            startActivity(activity_daygroup);
+            activity_daygroup.putExtra("schultag", schultagEinbeziehen);
+            activity_daygroup.putExtra("ferientag", ferientagEinbeziehen);
+            activity_daygroup.putExtra("samstag", samstagEinbeziehen);
+            activity_daygroup.putExtra("sonnFeiertag", sonnFeiertagEinbeziehen);
+            startActivityForResult(activity_daygroup, REQUEST_CODE_DAYGROUP);
         });
     }
 
-    // Diese Methode wird aufgerufen, wenn die SceduleActivity oder DirectionActivity geschlossen wird
+    // Diese Methode wird aufgerufen, wenn die SceduleActivity, DirectionActivity oder DaygroupActivity geschlossen wird
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -155,6 +167,17 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("MainActivity", "Richtung 1 einbeziehen: " + richtung1Einbeziehen);
             Log.d("MainActivity", "Richtung 2 einbeziehen: " + richtung2Einbeziehen);
+        } else if (requestCode == REQUEST_CODE_DAYGROUP && resultCode == RESULT_OK && data != null) {
+            // Tagesgruppen aus den Intent-Extras auslesen
+            schultagEinbeziehen = data.getBooleanExtra("schultag", false);
+            ferientagEinbeziehen = data.getBooleanExtra("ferientag", false);
+            samstagEinbeziehen = data.getBooleanExtra("samstag", false);
+            sonnFeiertagEinbeziehen = data.getBooleanExtra("sonnFeiertag", false);
+
+            Log.d("MainActivity", "Schultag einbeziehen: " + schultagEinbeziehen);
+            Log.d("MainActivity", "Ferientag einbeziehen: " + ferientagEinbeziehen);
+            Log.d("MainActivity", "Samstag einbeziehen: " + samstagEinbeziehen);
+            Log.d("MainActivity", "Sonn-/Feiertag einbeziehen: " + sonnFeiertagEinbeziehen);
         }
     }
 

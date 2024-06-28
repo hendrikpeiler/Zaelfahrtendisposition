@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
             // Linien sammeln
             sammleLinien(erhebungsstandListe);
 
+            List<Zaehlfahrt> zaehlfahrtenListe = DatenImporteurZaehlfahrten.importiereCSV(this, R.raw.zaehlfahrten);
+
+            //Jeder Fahrt die neueset Zaehlfahrt zuweisen
+            ZaehlfahrtenZuordner zaehlfahrtenZuordner = new ZaehlfahrtenZuordner();
+
+            ZaehlfahrtenZuordner.weiseNeuesteZaehlfahrtZu(erhebungsstandListe, zaehlfahrtenListe);
+
         } catch (IOException e) {
             // Fehlerbehandlung bei IO-Ausnahmen
             e.printStackTrace();

@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatenImporteurErhebungsstand {
+public class DatenImporteurZaehlfahrten {
 
-    public static List<Fahrt> importiereCSV(Context context, int resourceId) throws IOException {
-        List<Fahrt> data = new ArrayList<>();
+
+    public static List<Zaehlfahrt> importiereCSV(Context context, int resourceId) throws IOException {
+        List<Zaehlfahrt> data = new ArrayList<>();
         InputStream is = context.getResources().openRawResource(resourceId);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             String line;
@@ -22,12 +23,12 @@ public class DatenImporteurErhebungsstand {
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(";");
                 // Erstellen Sie ein neues Fahrt-Objekt und fügen Sie es der Liste hinzu
-                Fahrt fahrt = new Fahrt(values[0], values[1], Integer.parseInt(values[2]), values[3], values[4], Integer.parseInt(values[5]), Integer.parseInt(values[6]), Integer.parseInt(values[7]));
-                data.add(fahrt);
+                Zaehlfahrt zaehlfahrt = new Zaehlfahrt(values[0], Integer.parseInt(values[1]), values[2], values[3], values[4], values[5],values[6]);
+                data.add(zaehlfahrt);
 
                 // Daten zur Kontrolle ins Logcat schreiben
-                Log.d("DatenImporteurErhebungsstand", "Eingefügte Daten: " + "Linie: " + fahrt.getLinie() + ", Richtung: " + fahrt.getRichtung() + ", Tagesgruppe: " + fahrt.getTagesgruppe() +
-                        ", Starthaltestelle: " + fahrt.getStarthaltestelle() + ", Abfahrtszeit: " + fahrt.getAbfahrtszeit());
+                Log.d("DatenImporteurZaehlfahrt", "Eingefügte Daten: " + "Linie: " + zaehlfahrt.getLinie() + ", Richtung: " + zaehlfahrt.getRichtung() + ", Tagesgruppe: " + zaehlfahrt.getTagesgruppe() +
+                        ", Starthaltestelle: " + zaehlfahrt.getStarthaltestelle() + ", Datum: " + zaehlfahrt.getDatum() + ", Fahrzeug: " + zaehlfahrt.getFahrzeug());
             }
 
         }

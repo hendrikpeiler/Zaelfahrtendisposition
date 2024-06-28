@@ -14,6 +14,8 @@ public class Fahrt implements Parcelable {
     int erhoben;
     int guetepruefungOk;
 
+    Zaehlfahrt neuesteZaehlfahrt;
+
     public Fahrt(String Tagesgruppe, String Linie, int Richtung, String Abfahrtszeit, String Starthaltestelle, int geplant, int erhoben, int guetepruefungOk){
         this.Tagesgruppe = Tagesgruppe;
         this.Linie = Linie;
@@ -34,6 +36,7 @@ public class Fahrt implements Parcelable {
         geplant = in.readInt();
         erhoben = in.readInt();
         guetepruefungOk = in.readInt();
+        neuesteZaehlfahrt = in.readParcelable(Zaehlfahrt.class.getClassLoader());
     }
 
     public static final Creator<Fahrt> CREATOR = new Creator<Fahrt>() {
@@ -63,6 +66,7 @@ public class Fahrt implements Parcelable {
         dest.writeInt(geplant);
         dest.writeInt(erhoben);
         dest.writeInt(guetepruefungOk);
+        dest.writeParcelable(neuesteZaehlfahrt, flags);
     }
 
     public int getErhoben() {
@@ -131,5 +135,13 @@ public class Fahrt implements Parcelable {
 
     public int getPruefQuote(){
         return (int) (((double) guetepruefungOk) / ((double) geplant) * 100);
+    }
+
+    public Zaehlfahrt getNeuesteZaehlfahrt(){
+        return neuesteZaehlfahrt;
+    }
+
+    public void setNeuesteZaehlfahrt(Zaehlfahrt neuereZaehlfahrt){
+        neuesteZaehlfahrt = neuereZaehlfahrt;
     }
 }

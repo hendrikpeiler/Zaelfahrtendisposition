@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean hasReceivedSchedule = false; // Flag, ob Start- und Endzeit empfangen wurde
 
+    List<Fahrt> erhebungsstandListe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             // Importieren der CSV-Daten
-            List<Fahrt> erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
+            erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
 
             // Linien sammeln
             sammleLinien(erhebungsstandListe);
@@ -79,16 +81,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         btn_search.setOnClickListener(v -> {
-            try {
+            //try {
                 // Importieren der CSV-Daten
-                List<Fahrt> erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
+                //List<Fahrt> erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
 
                 // Linien sammeln
                 sammleLinien(erhebungsstandListe);
 
-
-                // Filtern der Fahrten basierend auf den boolean-Variablen
                 List<Fahrt> gefilterteListe = filterListeNachTagen(erhebungsstandListe);
+
 
                 // Filtern der Fahrten nach Richtungen
                 gefilterteListe = filterListeNachRichtungen(gefilterteListe);
@@ -108,10 +109,10 @@ public class MainActivity extends AppCompatActivity {
                 activity_search.putParcelableArrayListExtra("bewertung_list", bewertungList);
                 startActivity(activity_search);
 
-            } catch (IOException e) {
+            //} catch (IOException e) {
                 // Fehlerbehandlung bei IO-Ausnahmen
-                e.printStackTrace();
-            }
+               // e.printStackTrace();
+            //}
         });
 
         btn_scedule.setOnClickListener(v -> {
@@ -224,10 +225,10 @@ public class MainActivity extends AppCompatActivity {
         for (Fahrt fahrt : fahrten) {
             boolean add = false;
             switch (fahrt.getTagesgruppe()) {
-                case "Schultag":
+                case "Montag - Freitag Schule":
                     add = schultagEinbeziehen;
                     break;
-                case "Ferientag":
+                case "Montag - Freitag Ferien":
                     add = ferientagEinbeziehen;
                     break;
                 case "Samstag":

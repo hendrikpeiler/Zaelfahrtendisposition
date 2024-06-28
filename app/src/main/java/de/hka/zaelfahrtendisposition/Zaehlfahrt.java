@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -18,6 +19,9 @@ public class Zaehlfahrt implements Parcelable {
     String Datum;
     String Fahrzeug;
 
+    private String abfahrtszeitString;
+    private LocalTime abfahrtszeit;
+
     // Verwendetes Datumsformat für den DateTimeFormatter
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -25,7 +29,7 @@ public class Zaehlfahrt implements Parcelable {
         this.Tagesgruppe = Tagesgruppe;
         this.Linie = Linie;
         this.Richtung = Richtung;
-        this.Abfahrtszeit = Abfahrtszeit;
+        this.Abfahrtszeit = Abfahrtszeit+":00";
         this.Starthaltestelle = Starthaltestelle;
         this.Datum = Datum;
         this.Fahrzeug = Fahrzeug;
@@ -140,7 +144,6 @@ public class Zaehlfahrt implements Parcelable {
         try {
             return LocalDate.parse(Datum, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -150,9 +153,31 @@ public class Zaehlfahrt implements Parcelable {
         LocalDate otherDate = other.getParsedDatum();
 
         if (thisDate != null && otherDate != null) {
-            return thisDate.isAfter(otherDate);
+            if (thisDate.isAfter(otherDate)) {
+                return true;
+            } else if (thisDate.equals(otherDate)) {
+                LocalTime thisTime = LocalTime.parse(this.Abfahrtszeit);
+                LocalTime otherTime = LocalTime.parse(other.Abfahrtszeit);
+                return thisTime.isAfter(otherTime);
+            } else {
+                return false;
+            }
         }
 
-        return false; // Im Fall von Parsing-Fehlern, als Sicherheitsmaßnahme.
+        return false; // Falls das Parsen fehlschlägt
+    }
+
+    public void parseAbfahrtszeit() {
+        if (abfahrtszeitString == null || abfahrtszeitString.isEmpty()) {
+            // Hier könnten Sie eine Standard-Abfahrtszeit setzen oder eine Fehlerbehandlung durchführen
+            System.err.println("Abfahrtszeit ist null oder leer!");
+            return;
+        }
+        try {
+            this.abfahrtszeit = LocalTime.parse(abfahrtszeitString, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            // Fehlerbehandlung, falls das Parsen fehlschlägt
+            System.err.println("Fehler beim Parsen der Abfahrtszeit: " + e.getMessage());
+        }
     }
 }

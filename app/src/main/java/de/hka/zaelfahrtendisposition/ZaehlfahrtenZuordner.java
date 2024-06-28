@@ -1,5 +1,7 @@
 package de.hka.zaelfahrtendisposition;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,13 +13,12 @@ public class ZaehlfahrtenZuordner {
 
         // Überprüfen, ob die Zuweisung korrekt durchgeführt wurde
         for (Fahrt fahrt : fahrten) {
-            Zaehlfahrt neuesteZaehlfahrt = fahrt.getNeuesteZaehlfahrt();
-            if (neuesteZaehlfahrt != null) {
-                System.out.println("Fahrt: " + fahrt.getLinie() + ", " + fahrt.getRichtung() + ", "
+            if(fahrt.getNeuesteZaehlfahrt() != null) {
+                Log.d("ZaehlfahrtenZuordner","Fahrt: " + fahrt.getLinie() + ", "+fahrt.getTagesgruppe() +", " + fahrt.getRichtung() + ", "
                         + fahrt.getStarthaltestelle() + ", " + fahrt.getAbfahrtszeit() + " -> Neueste Zaehlfahrt: "
-                        + neuesteZaehlfahrt.getDatum());
+                        + fahrt.getNeuesteZaehlfahrt().getDatum());
             } else {
-                System.out.println("Keine passende Zaehlfahrt gefunden für Fahrt: " + fahrt.getLinie() + ", "
+                Log.e("ZaehlfahrtenZuordner","Keine passende Zaehlfahrt gefunden für Fahrt: " + fahrt.getLinie() +", "+fahrt.getTagesgruppe() + ", "
                         + fahrt.getRichtung() + ", " + fahrt.getStarthaltestelle() + ", " + fahrt.getAbfahrtszeit());
             }
         }
@@ -25,6 +26,11 @@ public class ZaehlfahrtenZuordner {
     public static void assignNeuesteZaehlfahrt(List<Fahrt> fahrten, List<Zaehlfahrt> zaehlfahrten) {
         // Map, um die neueste Zaehlfahrt für jede Kombination von Linie, Richtung, Starthaltestelle, Abfahrtszeit zu speichern
         Map<String, Zaehlfahrt> neuesteZaehlfahrtMap = new HashMap<>();
+
+        // Vorab die Abfahrtszeiten der Zaehlfahrten parsen
+        for (Zaehlfahrt zaehlfahrt : zaehlfahrten) {
+            zaehlfahrt.parseAbfahrtszeit(); // Methode zum Parsen aufrufen
+        }
 
         // Durchlaufen Sie die Liste der Zaehlfahrten und speichern Sie die neueste für jede Kombination
         for (Zaehlfahrt zaehlfahrt : zaehlfahrten) {

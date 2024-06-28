@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class FahrtAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -56,6 +57,15 @@ public class FahrtAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             // Setze die Prüfquote
             fahrtViewHolder.pruefquote.setText(String.valueOf(fahrt.getPruefQuote()) + "%");
+
+            //Setze neueste Erhebung
+
+            if(fahrt.getNeuesteZaehlfahrt() != null) {
+                fahrtViewHolder.neuesteZaehlfahrt.setText(fahrt.getNeuesteZaehlfahrt().getParsedDatum().toString());
+            }else{
+                fahrtViewHolder.neuesteZaehlfahrt.setText("keine Erhebung gefunden");
+            }
+
         }
     }
 
@@ -71,7 +81,7 @@ public class FahrtAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     static class FahrtViewHolder extends RecyclerView.ViewHolder {
-        TextView tagesgruppe, linie, richtung, abfahrtszeit, starthaltestelle, geplant, erhoben, guetepruefungOk, pruefquote;
+        TextView tagesgruppe, linie, richtung, abfahrtszeit, starthaltestelle, geplant, erhoben, guetepruefungOk, pruefquote, neuesteZaehlfahrt;
 
         public FahrtViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,6 +94,7 @@ public class FahrtAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             erhoben = itemView.findViewById(R.id.erhoben);
             guetepruefungOk = itemView.findViewById(R.id.guetepruefungOk);
             pruefquote = itemView.findViewById(R.id.pruefquote);
+            neuesteZaehlfahrt = itemView.findViewById(R.id.neuesteZaehlfahrt);
         }
     }
 }

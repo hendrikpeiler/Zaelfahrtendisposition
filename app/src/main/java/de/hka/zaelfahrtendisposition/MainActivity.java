@@ -16,14 +16,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainActivity extends AppCompatActivity {
 
     // Globale boolean-Variablen zum Festlegen, welche Tage berücksichtigt werden sollen
-    private boolean schultagEinbeziehen = false;
-    private boolean ferientagEinbeziehen = false;
+    private boolean schultagEinbeziehen = true;
+    private boolean ferientagEinbeziehen = true;
     private boolean samstagEinbeziehen = true;
-    private boolean sonnFeiertagEinbeziehen = false;
+    private boolean sonnFeiertagEinbeziehen = true;
 
     // Globale Variable zum Speichern der Linien
     private Set<String> linienSet = new HashSet<>();
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_SCHEDULE = 1; // Request-Code für SceduleActivity
     private static final int REQUEST_CODE_DIRECTION = 2; // Request-Code für DirectionActivity
     private static final int REQUEST_CODE_DAYGROUP = 3; // Request-Code für DaygroupActivity
+    private static final int REQUEST_CODE_LINE = 4; // Request-Code für LineActivity
 
     private boolean hasReceivedSchedule = false; // Flag, ob Start- und Endzeit empfangen wurde
 
@@ -56,6 +58,19 @@ public class MainActivity extends AppCompatActivity {
         Button btn_direction = findViewById(R.id.btn_direction);
         Button btn_daygroup = findViewById(R.id.btn_daygroup);
 
+        try {
+            // Importieren der CSV-Daten
+            List<Fahrt> erhebungsstandListe = DatenImporteurErhebungsstand.importiereCSV(this, R.raw.erhebungsstand);
+
+            // Linien sammeln
+            sammleLinien(erhebungsstandListe);
+
+        } catch (IOException e) {
+            // Fehlerbehandlung bei IO-Ausnahmen
+            e.printStackTrace();
+        }
+
+
         btn_search.setOnClickListener(v -> {
             try {
                 // Importieren der CSV-Daten
@@ -64,10 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 // Linien sammeln
                 sammleLinien(erhebungsstandListe);
 
-                // Setzen der Linien, nach denen gefiltert werden soll
-                filterLinien.add("811000"); // Filter nach Linie 811000
-                filterLinien.add("312080"); // Filter nach Linie 312080
-                filterLinien.add("315790"); // Filter nach Linie 315790
 
                 // Filtern der Fahrten basierend auf den boolean-Variablen
                 List<Fahrt> gefilterteListe = filterListeNachTagen(erhebungsstandListe);
@@ -109,17 +120,20 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(activity_scedule, REQUEST_CODE_SCHEDULE);
         });
 
+        // In der Methode btn_line.setOnClickListener():
         btn_line.setOnClickListener(v -> {
-            // Intent für die LineActivity erstellen
             Intent activity_line = new Intent(this, LineActivity.class);
 
-            // Linienliste an die LineActivity übergeben
-            ArrayList<String> linienListe = new ArrayList<>(linienSet); // Beispiel: linienSet aus deinem Code
-            activity_line.putStringArrayListExtra("linienListe", linienListe);
+            ArrayList<String> linienListe = new ArrayList<>(linienSet);
+            Log.d("MainActivity", "Linienliste size: " + linienListe.size()); // Debugging-Log
+            for (String linie : linienListe) {
+                Log.d("MainActivity", "Linie: " + linie); // Debugging-Log
+            }
 
-            // LineActivity starten
-            startActivity(activity_line);
+            activity_line.putStringArrayListExtra("linienListe", linienListe);
+            startActivityForResult(activity_line, REQUEST_CODE_LINE);
         });
+
 
         btn_direction.setOnClickListener(v -> {
             Intent activity_direction = new Intent(this, DirectionActivity.class);
@@ -160,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (DateTimeParseException e) {
                 Log.e("MainActivity", "Fehler beim Parsen der Zeit: " + e.getMessage());
             }
+
         } else if (requestCode == REQUEST_CODE_DIRECTION && resultCode == RESULT_OK && data != null) {
             // Richtungen aus den Intent-Extras auslesen
             richtung1Einbeziehen = data.getBooleanExtra("richtung1", true);
@@ -167,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d("MainActivity", "Richtung 1 einbeziehen: " + richtung1Einbeziehen);
             Log.d("MainActivity", "Richtung 2 einbeziehen: " + richtung2Einbeziehen);
+
         } else if (requestCode == REQUEST_CODE_DAYGROUP && resultCode == RESULT_OK && data != null) {
             // Tagesgruppen aus den Intent-Extras auslesen
             schultagEinbeziehen = data.getBooleanExtra("schultag", false);
@@ -178,63 +194,80 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "Ferientag einbeziehen: " + ferientagEinbeziehen);
             Log.d("MainActivity", "Samstag einbeziehen: " + samstagEinbeziehen);
             Log.d("MainActivity", "Sonn-/Feiertag einbeziehen: " + sonnFeiertagEinbeziehen);
+
+        } else if (requestCode == REQUEST_CODE_LINE && resultCode == RESULT_OK && data != null) {
+            // Ausgewählte Linien aus Intent-Extras auslesen und in filterLinien übernehmen
+            ArrayList<String> selectedLinien = data.getStringArrayListExtra("selectedLinien");
+            if (selectedLinien != null) {
+                filterLinien.clear();
+                filterLinien.addAll(selectedLinien);
+                Log.d("MainActivity", "Ausgewählte Linien: " + filterLinien);
+            } else {
+                Log.d("MainActivity", "Keine Linien ausgewählt");
+            }
         }
     }
 
-    // Methode zum Filtern der Fahrten nach den gewünschten Tagen
+
+
+    // Methode zum Filtern der Fahrten nach Tagen
     private List<Fahrt> filterListeNachTagen(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
+
         for (Fahrt fahrt : fahrten) {
-            String tagesgruppe = fahrt.getTagesgruppe().toLowerCase();
-            if ((schultagEinbeziehen && tagesgruppe.equals("montag - freitag schule")) ||
-                    (ferientagEinbeziehen && tagesgruppe.equals("montag - freitag ferien")) ||
-                    (samstagEinbeziehen && tagesgruppe.equals("samstag")) ||
-                    (sonnFeiertagEinbeziehen && tagesgruppe.equals("sonn-/feiertag"))) {
+            boolean add = false;
+            switch (fahrt.getTagesgruppe()) {
+                case "Schultag":
+                    add = schultagEinbeziehen;
+                    break;
+                case "Ferientag":
+                    add = ferientagEinbeziehen;
+                    break;
+                case "Samstag":
+                    add = samstagEinbeziehen;
+                    break;
+                case "Sonn-/Feiertag":
+                    add = sonnFeiertagEinbeziehen;
+                    break;
+                default:
+                    add = false;
+                    break;
+            }
+            if (add) {
                 gefilterteListe.add(fahrt);
             }
         }
+
         return gefilterteListe;
-    }
-
-    // Methode zum Sammeln der Linien
-    private List<String> sammleLinien(List<Fahrt> fahrten) {
-        List<String> linienListe = new ArrayList<>();
-
-        for (Fahrt fahrt : fahrten) {
-            linienListe.add(fahrt.getLinie());
-        }
-
-        // Linien ins Logcat schreiben
-        for (String linie : linienListe) {
-            Log.d("MainActivity", "Linie: " + linie);
-        }
-
-        return linienListe;
     }
 
     // Methode zum Filtern der Fahrten nach Richtungen
     private List<Fahrt> filterListeNachRichtungen(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
+
         for (Fahrt fahrt : fahrten) {
-            int richtung = fahrt.getRichtung();
-            if (richtung >= 1 && richtung <= 2 && ((richtung == 1 && richtung1Einbeziehen) || (richtung == 2 && richtung2Einbeziehen))) {
+            if ((fahrt.getRichtung() == 1 && richtung1Einbeziehen) || (fahrt.getRichtung() == 2 && richtung2Einbeziehen)) {
                 gefilterteListe.add(fahrt);
             }
         }
+
         return gefilterteListe;
     }
 
     // Methode zum Filtern der Fahrten nach Linien
     private List<Fahrt> filterListeNachLinien(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
+
         for (Fahrt fahrt : fahrten) {
-            if (filterLinien.contains(fahrt.getLinie())) {
+            if (filterLinien.isEmpty() || filterLinien.contains(fahrt.getLinie())) {
                 gefilterteListe.add(fahrt);
             }
         }
+
         return gefilterteListe;
     }
 
+    // Methode zum Filtern der Fahrten nach Abfahrtszeit
     // Methode zum Filtern der Fahrten nach Abfahrtszeitraum
     private List<Fahrt> filterListeNachAbfahrtszeit(List<Fahrt> fahrten) {
         List<Fahrt> gefilterteListe = new ArrayList<>();
@@ -250,5 +283,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return gefilterteListe;
+    }
+
+
+    // Methode zum Sammeln der Linien
+    private void sammleLinien(List<Fahrt> fahrten) {
+        Log.d("MainActivity","sammleLinien aufgerufen");
+        for (Fahrt fahrt : fahrten) {
+            linienSet.add(fahrt.getLinie());
+        }
+
+        // Linien ins Logcat schreiben
+        for (String linie : linienSet) {
+            Log.d("MainActivity", "Linie: " + linie);
+        }
     }
 }

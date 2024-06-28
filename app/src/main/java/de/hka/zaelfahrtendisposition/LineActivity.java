@@ -1,60 +1,79 @@
 package de.hka.zaelfahrtendisposition;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 public class LineActivity extends AppCompatActivity {
-    private Spinner Spinner_line;
-    private TextView selectedText;
+
+    private ArrayList<String> linienListe;
+    private boolean[] checkedItems;
+    private Set<String> selectedLinienSet;
+    private Button btn_selectLines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_line);
 
-        Intent intent = this.getIntent();
-        Spinner_line = findViewById(R.id.Spinner_line);
-        selectedText = findViewById(R.id.selectedText);
+        Intent intent = getIntent();
+        linienListe = intent.getStringArrayListExtra("linienListe");
+        if (linienListe == null) {
+            linienListe = new ArrayList<>();
+        }
+        Log.d("LineActivity", "Linienliste empfangen size: " + linienListe.size()); // Debugging-Log
+        for (String linie : linienListe) {
+            Log.d("LineActivity", "Linie: " + linie); // Debugging-Log
+        }
 
-        // Erhalte die übergebenen Linien
-        ArrayList<String> linienListe = getIntent().getStringArrayListExtra("linienListe");
+        checkedItems = new boolean[linienListe.size()];
+        selectedLinienSet = new HashSet<>();
+        btn_selectLines = findViewById(R.id.btn_selectLines);
 
-        // Adapter für Spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, linienListe);
-        Spinner_line.setAdapter(adapter);
+        btn_selectLines.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LineActivity.this);
+            builder.setTitle("Wähle Linien");
 
-        // Item selected listener
-        Spinner_line.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                String selectedItem = (String) parentView.getItemAtPosition(position);
-                selectedText.setText("Selected: " + selectedItem);
-            }
+            builder.setMultiChoiceItems(linienListe.toArray(new CharSequence[0]), checkedItems, (dialog, which, isChecked) -> {
+                if (isChecked) {
+                    selectedLinienSet.add(linienListe.get(which));
+                } else {
+                    selectedLinienSet.remove(linienListe.get(which));
+                }
+            });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // Do nothing
-            }
+            builder.setPositiveButton("OK", (dialog, which) -> {
+                Toast.makeText(LineActivity.this, "Ausgewählte Linien: " + selectedLinienSet, Toast.LENGTH_SHORT).show();
+                Intent resultIntent = new Intent();
+                resultIntent.putStringArrayListExtra("selectedLinien", new ArrayList<>(selectedLinienSet));
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            });
+
+            builder.setNegativeButton("Abbrechen", (dialog, which) -> dialog.dismiss());
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
     }
+
+    // In der onBackPressed-Methode oder wo die Auswahl bestätigt wird:
+    @Override
+    public void onBackPressed() {
+        Intent resultIntent = new Intent();
+        resultIntent.putStringArrayListExtra("selectedLinien", new ArrayList<>(selectedLinienSet));
+        setResult(RESULT_OK, resultIntent);
+        super.onBackPressed(); // Wichtig, um das Ergebnis an die aufrufende Activity zu übergeben
+    }
+
+
 }
